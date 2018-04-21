@@ -1,0 +1,66 @@
+<!--
+Nettside for å regne ut karaktersnitt for NTNU.
+Laget av Trygve Vang
+//TOOD: Hent poenggrense fra NTNUs nettsider, og mulighet for å laste opp karakterer.
+ -->
+<!doctype html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Karaktersnitt</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+	<div id="kalkuler" class="col-md-12 panel panel-default">
+		<h1 class="page-header">Kalkuler snittkarakter for å se om du kvalifiserer deg til NTNU</h1>
+		<div class="hidden" id="emnesnittkalkulator">
+			<h4>Regn ut snittkarakter manuelt basert på disse emneresultatene:</h4>
+			<table id="alleEmner">
+				<tbody id="regner"></tbody>
+			</table>
+			<button class="btn btn-success btn-sm" id="regnUt">Regn ut</button><hr />
+
+			<div id="snittRegnetUt"></div>
+		</div>
+
+		<br />
+		<button class="btn btn-success btn-sm" id="leggTilKnapp">Legg til emner manuelt</button>
+	</div>
+
+	<script>
+		$(document).ready(function() {
+			$('#leggTilKnapp').click(function() {
+				$('#emnesnittkalkulator').removeClass('hidden');
+				$('#leggTilForm').find('input[type=text], textarea').val("");
+				var inputRad = "<tr id=\"nyttemne\"><td><label>Emnenavn</label><input type=\"text\" name=\"emnenavn\"></td><td><label>Karakter (A-F)</label><input id=\"asdf\"type=\"text\" name=\"karakter\"></td></tr>";
+				$('#regner').append(inputRad);
+				$('#leggTilKnapp').text("Legg til emne");
+			});
+			$('#regnUt').click(function() {
+				let alleElementer = 0;
+				let antallEmner = 0;
+				// Finn en måte å tømme div #snittRegnetUt
+				$('#alleEmner > tbody > tr').each(function() {
+					alleElementer += $(this).children("td").find("#asdf").val().toUpperCase() === "A" ? 5 : ($(this).children("td").find("#asdf").val().toUpperCase() === "B" ? 4 : $(this).children("td").find("#asdf").val().toUpperCase() === "C" ? 3 : $(this).children("td").find("#asdf").val().toUpperCase() === "D" ? 2 : $(this).children("td").find("#asdf").val().toUpperCase() === "E" ? 1 : 0); // Antar på dette tidspunktet at input er gyldig
+					antallEmner++;
+				});
+				var snitt = alleElementer/antallEmner;
+				$('#snittRegnetUt').after("<p>Gjennomsnittskarakter: " + snitt + "</p>");
+				
+				if (snitt < 4.1 && snitt > 3.5) {
+					$('#snittRegnetUt').after("<p class=\"label label-warning\">Snitt er under grensa på 4,1. Her må det jobbes.</p>","<br />");
+				}
+				else if (snitt <= 3.5) {
+					console.log("asdf");
+					$('#snittRegnetUt').after("<p class=\"label label-danger\">Snitt er for langt unna kvalifisert.</p>","<br />");
+				}
+				else {
+					$('#snittRegnetUt').after("<p class=\"label label-success\">Snitt er over grensa på 4,1. Stå på, du gjør en god jobb.</p>","<br />");
+				}
+			});
+		});
+	</script>
+</body>
+</html>
